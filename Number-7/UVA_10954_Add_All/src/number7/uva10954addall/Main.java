@@ -29,9 +29,10 @@ public class Main {
             long result = 0;
             for (int i = n - 1; i > 0; i--) {
                 System.out.print(a.get(i) + " ");
-                result += (long) a.get(i) * (n - i);
+                result += a.get(i) * (n - i);
             }
-            result += (long) a.get(0) * (n - 1);
+            System.out.println(a.get(0));
+            result += a.get(0) * (n - 1);
             System.out.println(result);
             a.clear();
             n = sc.nextInt();
