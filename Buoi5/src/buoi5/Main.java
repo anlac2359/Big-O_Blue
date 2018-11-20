@@ -61,6 +61,7 @@ public class Main {
         while (!q.isEmpty()) {
             Point u = q.poll();
             for (int i = 0; i < N; i++) {
+                /*
                 Long value = a.get(i).longValue() * s;
                 value %= 100000;
                 if (patht[value.intValue()] == -1) {
@@ -70,6 +71,7 @@ public class Main {
                         return patht[d];
                     }
                 }
+*/
             }
         }
         return -1;
