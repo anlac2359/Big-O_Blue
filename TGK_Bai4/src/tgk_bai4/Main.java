@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tgk_bai4;
+//package tgk_bai4;
 
 import java.awt.Point;
 import java.util.*;
@@ -23,12 +23,14 @@ public class Main {
     static ArrayList<ArrayList<Integer>> dist = new ArrayList<>();
     static int R;
     static int C;
+    static Point s;
+    static Point f;
 
-    public static void main(String[] args) {
+    public static void readInput() {
         Scanner sc = new Scanner(System.in);
         R = sc.nextInt();
         C = sc.nextInt();
-        while (R != 0 && C != 0) {
+        if (R != 0 && C != 0) {
             int nBooms = sc.nextInt();
             for (int i = 0; i < R; i++) {
                 maze.add(new ArrayList<>());
@@ -47,18 +49,27 @@ public class Main {
                     maze.get(rB).set(cB, 1);
                 }
             }
-            Point s = new Point(sc.nextInt(), sc.nextInt());
-            Point f = new Point(sc.nextInt(), sc.nextInt());
+            s = new Point(sc.nextInt(), sc.nextInt());
+            f = new Point(sc.nextInt(), sc.nextInt());
+        }
+    }
+
+    public static void clearVariable() {
+        for (int i = 0; i < R; i++) {
+            maze.get(i).clear();
+            dist.get(i).clear();
+        }
+        maze.clear();
+        dist.clear();
+    }
+
+    public static void main(String[] args) {
+        readInput();
+        while (R != 0 && C != 0) {
             bfs(s);
             System.out.println(dist.get(f.x).get(f.y));
-            R = sc.nextInt();
-            C = sc.nextInt();
-            for (int i = 0; i < R; i++) {
-                maze.get(i).clear();
-                dist.get(i).clear();
-            }
-            maze.clear();
-            dist.clear();
+            clearVariable();
+            readInput();
         }
     }
 
@@ -74,7 +85,7 @@ public class Main {
                 x = u.x + dx[i];
                 y = u.y + dy[i];
                 if (x >= 0 && x < C && y >= 0 && y < R) {
-                    if (dist.get(x).get(y) == -1 && maze.get(x).get(y) == 0) {
+                    if (dist.get(x).get(y).equals(-1) && maze.get(x).get(y).equals(0)) {
                         dist.get(x).set(y, dist.get(u.x).get(u.y) + 1);
                         q.add(new Point(x, y));
                     }
