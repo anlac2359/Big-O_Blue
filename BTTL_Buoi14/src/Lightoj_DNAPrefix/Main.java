@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package SPOJ_EKO_Eko;
+package Lightoj_DNAPrefix;
 
 import java.io.*;
 
@@ -16,99 +16,60 @@ public class Main {
     /**
      * @param args the command line arguments
      */
+    static int ans = 0;
+    static int[] d = new int[26];
     
-    // Mang a la mang Giam dan
-    static int lower_bound(int[] a, int left, int right, int x) {
-        int pos = right;
-        while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (a[mid] <= x) {
-                pos = mid;
-                right = mid;
-            } else {
-                left = mid + 1;
+    static final int MAX = 4;
+    static class Node {
+        int value = 0;
+        Node[] child = new Node[MAX];
+    }
+    static void addNode(Node Root, String s) {
+        Node node = Root;
+        for (int i = 0; i < s.length(); i++) {
+            int next = d[s.charAt(i) - 'A'];
+
+            if (node.child[next] == null) {
+                node.child[next] = new Node();
+            }
+            node = node.child[next];
+            node.value++;
+
+            ans = Math.max(node.value * (i + 1), ans);
+        }
+    }
+
+    static void Delete(Node u) {
+        for (int i = 0; i < 4; i++) {
+            if (u.child[i] != null) {
+                Delete(u.child[i]);
             }
         }
-        return pos;
+        u = null;
     }
-    
-    class Fraction {
-        long t;
-        long m;
 
-        public Fraction() {
-            t = 0;
-            m = 0;
-        }
-        public Fraction(long t, long m) {
-            this.t = t;
-            this.m = m;
-        }
-        public long getT() {
-            return t;
-        }
-        public long getM() {
-            return m;
-        }
-        public Fraction add(Fraction f) {
-            return new Fraction(this.t * f.getM() + f.getT() * this.m, this.m * f.getM());
-        }
-        public Fraction sub(Fraction f) {
-            return new Fraction(this.t * f.getM() - f.getT() * this.m, this.m * f.getM());
-        }
-    }
-    
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         Reader r = new Reader();
-        int N, M, count;
-        int[] heights;
-        
-        double avg, avgHeightCut, sumD = 0;
-        
-        int[] temp;
-        int sum = 0;
-        int sumTemp = 0;
-        int pos;
-        double result;
+        int T, N;
+        Node Root;
 
-        N = r.nextInt();
-        M = r.nextInt();
-        heights = new int[N];
-        temp = new int[N];
-        for (int i = 0; i < N; i++) {
-            heights[i] = r.nextInt();
-            sum += heights[i];
-        }
-        avg = (double) sum / N;
-        avgHeightCut = (double) (sum - M) / N;
-        count = 0;
-        for (int i = 0; i < N; i++) {
-            if (avgHeightCut - heights[i] > 0) {
-                sumD += avgHeightCut - heights[i];
-                count++;
+        d['A' - 'A'] = 0;
+        d['C' - 'A'] = 1;
+        d['G' - 'A'] = 2;
+        d['T' - 'A'] = 3;
+        T = r.nextInt();
+        for (int i = 1; i <= T; i++) {
+            ans = 0;
+            Root = new Node();
+            N = r.nextInt();
+            for (int j = 0; j < N; j++) {
+                addNode(Root, r.readLine());
             }
+            System.out.println("Case " + i + ": " + ans);
+            Delete(Root);
+            Root = null;
         }
-        result = avgHeightCut + (sumD / (N - count));
-        System.out.println((int)result);
-        
-        /*
-        Arrays.sort(heights);
-        for (int i = 0; i < N; i++) {
-            temp[i] = sum - sumTemp - heights[i] * (N - i);
-            sumTemp += heights[i];
-        }
-        pos = lower_bound(temp, 0, N - 1, M);
-        sumTemp = 0;
-        for (int i = pos; i < N; i++) {
-            sumTemp += heights[i];
-        }
-        result = (sumTemp - M) / (N - pos);
-        if ((sumTemp - M) % (N - pos) != 0) {
-            result--;
-        }
-        */
-        
     }
 
     static class Reader {

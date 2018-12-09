@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package SPOJ_EKO_Eko;
+package Hackerearth_SearchEngine;
 
-import java.io.*;
+import com.sun.org.apache.xerces.internal.dom.ParentNode;
+import java.io.DataInputStream;
+import java.io.IOException;
 
 /**
  *
@@ -17,100 +19,93 @@ public class Main {
      * @param args the command line arguments
      */
     
-    // Mang a la mang Giam dan
-    static int lower_bound(int[] a, int left, int right, int x) {
-        int pos = right;
-        while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (a[mid] <= x) {
-                pos = mid;
-                right = mid;
-            } else {
-                left = mid + 1;
-            }
+    class Node {
+        static final int MAX = 26;
+        public Node[] child;
+        public int countWord;
+        public Node() {
+            child = new Node[MAX];
+            countWord = 0;
         }
-        return pos;
     }
     
-    class Fraction {
-        long t;
-        long m;
-
-        public Fraction() {
-            t = 0;
-            m = 0;
+    class Trie {
+        public static final int MAX = 26;
+        private Node root;
+        public Trie() {
+            root = new Node();
         }
-        public Fraction(long t, long m) {
-            this.t = t;
-            this.m = m;
+        public void addWord(String s) {
+            int ch;
+            Node temp = root;
+            for (int i = 0; i < s.length(); i++) {
+                ch = s.charAt(i) - 'a';
+                if (temp.child[ch] == null) {
+                    Node x =  new Node();
+                    temp.child[ch] = x;
+                }
+                temp = temp.child[ch];
+            }
+            temp.countWord++;
         }
-        public long getT() {
-            return t;
+        public boolean findWord(String s) {
+            int ch;
+            Node temp = root;
+            for (int i = 0; i < s.length(); i++) {
+                ch = s.charAt(i) - 'a';
+                if (temp.child[ch] == null) {
+                    return false;
+                }
+                temp = temp.child[ch];
+            }
+            return temp.countWord > 0;
         }
-        public long getM() {
-            return m;
+        private boolean isWord(Node pNode) {
+            return (pNode.countWord != 0);
         }
-        public Fraction add(Fraction f) {
-            return new Fraction(this.t * f.getM() + f.getT() * this.m, this.m * f.getM());
+        private boolean isEmpty(Node pNode) {
+            for (int i = 0; i < MAX; i++) {
+                if (pNode.child[i] != null) {
+                    return false;
+                }
+            }
+            return true;
         }
-        public Fraction sub(Fraction f) {
-            return new Fraction(this.t * f.getM() - f.getT() * this.m, this.m * f.getM());
+        public boolean removeWord(String s) {
+            return removeWord(root, s, 0, s.length());
+        }
+        public boolean removeWord(Node root, String s, int level, int len) {
+            if (root == null) {
+                return false;
+            }
+            if (level == len) {
+                if (root.countWord > 0) {
+                    root.countWord--;
+                    return true;
+                }
+                return false;
+            }
+            int ch = s.charAt(level) - 'a';
+            boolean flag = removeWord(root.child[ch], s, level + 1, len);
+            if (flag && !isWord(root.child[ch]) && isEmpty(root.child[ch])) {
+                root.child[ch] = null;
+            }
+            return flag;
         }
     }
     
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         Reader r = new Reader();
-        int N, M, count;
-        int[] heights;
-        
-        double avg, avgHeightCut, sumD = 0;
-        
-        int[] temp;
-        int sum = 0;
-        int sumTemp = 0;
-        int pos;
-        double result;
-
+        int N, Q;
+        Trie trie;
         N = r.nextInt();
-        M = r.nextInt();
-        heights = new int[N];
-        temp = new int[N];
+        Q = r.nextInt();
         for (int i = 0; i < N; i++) {
-            heights[i] = r.nextInt();
-            sum += heights[i];
+            
         }
-        avg = (double) sum / N;
-        avgHeightCut = (double) (sum - M) / N;
-        count = 0;
-        for (int i = 0; i < N; i++) {
-            if (avgHeightCut - heights[i] > 0) {
-                sumD += avgHeightCut - heights[i];
-                count++;
-            }
-        }
-        result = avgHeightCut + (sumD / (N - count));
-        System.out.println((int)result);
-        
-        /*
-        Arrays.sort(heights);
-        for (int i = 0; i < N; i++) {
-            temp[i] = sum - sumTemp - heights[i] * (N - i);
-            sumTemp += heights[i];
-        }
-        pos = lower_bound(temp, 0, N - 1, M);
-        sumTemp = 0;
-        for (int i = pos; i < N; i++) {
-            sumTemp += heights[i];
-        }
-        result = (sumTemp - M) / (N - pos);
-        if ((sumTemp - M) % (N - pos) != 0) {
-            result--;
-        }
-        */
-        
     }
-
+    
     static class Reader {
 
         final private int BUFFER_SIZE = 1 << 16;

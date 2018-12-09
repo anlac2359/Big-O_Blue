@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package SPOJ_EKO_Eko;
+//package Hackerearth_MonkAndHisFriends;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.TreeSet;
 
 /**
  *
@@ -15,102 +17,38 @@ public class Main {
 
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
      */
-    
-    // Mang a la mang Giam dan
-    static int lower_bound(int[] a, int left, int right, int x) {
-        int pos = right;
-        while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (a[mid] <= x) {
-                pos = mid;
-                right = mid;
-            } else {
-                left = mid + 1;
-            }
-        }
-        return pos;
-    }
-    
-    class Fraction {
-        long t;
-        long m;
-
-        public Fraction() {
-            t = 0;
-            m = 0;
-        }
-        public Fraction(long t, long m) {
-            this.t = t;
-            this.m = m;
-        }
-        public long getT() {
-            return t;
-        }
-        public long getM() {
-            return m;
-        }
-        public Fraction add(Fraction f) {
-            return new Fraction(this.t * f.getM() + f.getT() * this.m, this.m * f.getM());
-        }
-        public Fraction sub(Fraction f) {
-            return new Fraction(this.t * f.getM() - f.getT() * this.m, this.m * f.getM());
-        }
-    }
-    
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
+        int T, N, M, size, newSize;
+        long temp;
         Reader r = new Reader();
-        int N, M, count;
-        int[] heights;
+        TreeSet ts;
+        ArrayList<Long> al = new ArrayList<>();
         
-        double avg, avgHeightCut, sumD = 0;
-        
-        int[] temp;
-        int sum = 0;
-        int sumTemp = 0;
-        int pos;
-        double result;
-
-        N = r.nextInt();
-        M = r.nextInt();
-        heights = new int[N];
-        temp = new int[N];
-        for (int i = 0; i < N; i++) {
-            heights[i] = r.nextInt();
-            sum += heights[i];
-        }
-        avg = (double) sum / N;
-        avgHeightCut = (double) (sum - M) / N;
-        count = 0;
-        for (int i = 0; i < N; i++) {
-            if (avgHeightCut - heights[i] > 0) {
-                sumD += avgHeightCut - heights[i];
-                count++;
+        T = r.nextInt();
+        for (int i = 0; i < T; i++) {
+            N = r.nextInt();
+            M = r.nextInt();
+            for (int j = 0; j < N; j++) {
+                temp = r.nextLong();
+                al.add(temp);
+            }
+            ts = new TreeSet(al);
+            for (int j = 0; j < M; j++) {
+                temp = r.nextLong();
+                size = ts.size();
+                ts.add(temp);
+                newSize = ts.size();
+                if (size == newSize) {
+                    System.out.println("YES");
+                } else {
+                    System.out.println("NO");
+                }
             }
         }
-        result = avgHeightCut + (sumD / (N - count));
-        System.out.println((int)result);
-        
-        /*
-        Arrays.sort(heights);
-        for (int i = 0; i < N; i++) {
-            temp[i] = sum - sumTemp - heights[i] * (N - i);
-            sumTemp += heights[i];
-        }
-        pos = lower_bound(temp, 0, N - 1, M);
-        sumTemp = 0;
-        for (int i = pos; i < N; i++) {
-            sumTemp += heights[i];
-        }
-        result = (sumTemp - M) / (N - pos);
-        if ((sumTemp - M) % (N - pos) != 0) {
-            result--;
-        }
-        */
-        
     }
-
     static class Reader {
 
         final private int BUFFER_SIZE = 1 << 16;
