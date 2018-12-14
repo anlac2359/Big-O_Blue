@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package Lightoj_DNAPrefix;
+//package LightOJ_1129_Consistency_Checker;
 
 import java.io.*;
 
@@ -16,72 +16,70 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    static int result = 0;
-    static final int MAX = 4;
+    
+    static final int MAX = 10;
 
     static class Node {
-        int value = 0;
-        Node[] child = new Node[MAX];
-    }
 
-    static void addNode(Node Root, String s) {
-        Node node = Root;
-        for (int i = 0; i < s.length(); i++) {
-            int next = 0;
-            switch (s.charAt(i)) {
-                case 'A':
-                    next = 0;
-                    break;
-                case 'C':
-                    next = 1;
-                    break;
-                case 'G':
-                    next = 2;
-                    break;
-                case 'T':
-                    next = 3;
-                    break;
-            }
+        public Node[] child;
+        public boolean isLeaf;
 
-            if (node.child[next] == null) {
-                node.child[next] = new Node();
-            }
-            node = node.child[next];
-            node.value++;
-
-            if (node.value * (i + 1) > result) {
-                result = node.value * (i + 1);
-            }
-            
+        public Node() {
+            child = new Node[MAX];
+            isLeaf = false;
         }
     }
 
-    static void Delete(Node u) {
-        for (int i = 0; i < 4; i++) {
-            if (u.child[i] != null) {
-                Delete(u.child[i]);
-            }
+    static class Trie {
+
+        Node root;
+
+        public Trie() {
+            root = new Node();
         }
-        u = null;
+
+        public boolean addWord(String s) {
+            Node node = root;
+            boolean flag = false;
+            for (int i = 0; i < s.length(); i++) {
+                int c = s.charAt(i) - '0';
+                if (node.child[c] == null) {
+                    node.child[c] = new Node();
+                    flag = true;
+                }
+                node = node.child[c];
+                if (node.isLeaf) {
+                    flag = false;
+                    break;
+                }
+            }
+            node.isLeaf = true;
+            return flag;
+        }
     }
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         Reader r = new Reader();
-        int T, N;
-        Node Root;
-        T = r.nextInt();
+        int T = r.nextInt();
         for (int i = 1; i <= T; i++) {
-            result = 0;
-            Root = new Node();
-            N = r.nextInt();
-            for (int j = 0; j < N; j++) {
-                addNode(Root, r.readLine());
+            Trie trie = new Trie();
+            int n = r.nextInt();
+            boolean flag = true;
+            for (int j = 0; j < n; j++) {
+                String s = r.readLine();
+                if (flag && !trie.addWord(s)) {
+                    flag = false;
+                }
             }
-            System.out.println("Case " + i + ": " + result);
-            Delete(Root);
-            Root = null;
+            System.out.print("Case " + i + ": ");
+            if (flag) {
+                System.out.println("YES");
+            } else {
+                System.out.println("NO");
+            }
         }
+        System.exit(0);
     }
 
     static class Reader {

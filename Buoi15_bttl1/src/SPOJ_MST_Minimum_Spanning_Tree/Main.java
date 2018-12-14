@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package Lightoj_DNAPrefix;
+//package SPOJ_MST_Minimum_Spanning_Tree;
 
 import java.io.*;
+import java.util.*;
 
 /**
  *
@@ -16,72 +17,89 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    static int result = 0;
-    static final int MAX = 4;
+    static int[] dist;
+    static int[] path;
+    static boolean[] visited;
 
-    static class Node {
-        int value = 0;
-        Node[] child = new Node[MAX];
-    }
+    static class Node implements Comparable<Node> {
 
-    static void addNode(Node Root, String s) {
-        Node node = Root;
-        for (int i = 0; i < s.length(); i++) {
-            int next = 0;
-            switch (s.charAt(i)) {
-                case 'A':
-                    next = 0;
-                    break;
-                case 'C':
-                    next = 1;
-                    break;
-                case 'G':
-                    next = 2;
-                    break;
-                case 'T':
-                    next = 3;
-                    break;
-            }
+        public Integer id;
+        public Integer dist;
 
-            if (node.child[next] == null) {
-                node.child[next] = new Node();
-            }
-            node = node.child[next];
-            node.value++;
-
-            if (node.value * (i + 1) > result) {
-                result = node.value * (i + 1);
-            }
-            
+        public Node(Integer id_in, Integer dist_in) {
+            id = id_in;
+            dist = dist_in;
+        }
+        @Override
+        public int compareTo(Node other) {
+            return dist.compareTo(other.dist);
         }
     }
 
-    static void Delete(Node u) {
-        for (int i = 0; i < 4; i++) {
-            if (u.child[i] != null) {
-                Delete(u.child[i]);
+//    static void printMST() {
+//        int n = dist.length;
+//        int ans = 0;
+//        for (int i = 0; i < n; i++) {
+//            if (path[i] == -1) {
+//                continue;
+//            }
+//            ans += dist[i];
+//            System.out.println("");
+//        }
+//        System.out.println("Weight of MST");
+//    }
+
+    static void Prim(int src, ArrayList<ArrayList<Node>> graph) {
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        int n = graph.size();
+        dist = new int[n];
+        path = new int[n];
+        visited = new boolean[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        Arrays.fill(path, -1);
+        Arrays.fill(visited, false);
+        pq.add(new Node(src, 0));
+        dist[src] = 0;
+        while (!pq.isEmpty()) {
+            Node top = pq.poll();
+            int u = top.id;
+            visited[u] = true;
+            for (int i = 0; i < graph.get(u).size(); i++) {
+                Node neighbor = graph.get(u).get(i);
+                int v = neighbor.id, w = neighbor.dist;
+                if (!visited[v] && w < dist[v]) {
+                    dist[v] = w;
+                    pq.add(new Node(v, w));
+                    path[v] = u;
+                }
             }
         }
-        u = null;
     }
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         Reader r = new Reader();
-        int T, N;
-        Node Root;
-        T = r.nextInt();
-        for (int i = 1; i <= T; i++) {
-            result = 0;
-            Root = new Node();
-            N = r.nextInt();
-            for (int j = 0; j < N; j++) {
-                addNode(Root, r.readLine());
-            }
-            System.out.println("Case " + i + ": " + result);
-            Delete(Root);
-            Root = null;
+        int N = r.nextInt();
+        int M = r.nextInt();
+        int u, v, w;
+        long result;
+        ArrayList<ArrayList<Node>> graph = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            graph.add(new ArrayList<Node>());
         }
+        for (int i = 0; i < M; i++) {
+            u = r.nextInt() - 1;
+            v = r.nextInt() - 1;
+            w = r.nextInt();
+            graph.get(u).add(new Node(v, w));
+            graph.get(v).add(new Node(u, w));
+        }
+        Prim(0, graph);
+        result = 0;
+        for (int i = 0; i < dist.length; i++) {
+            result += dist[i];
+        }
+        System.out.println(result);
     }
 
     static class Reader {
