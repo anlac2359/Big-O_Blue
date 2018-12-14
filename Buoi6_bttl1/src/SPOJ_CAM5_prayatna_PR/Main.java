@@ -3,66 +3,87 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package SPOJ_EKO_Eko;
+package SPOJ_CAM5_prayatna_PR;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  *
- * @author King
+ * @author Administrator
  */
 public class Main {
 
     /**
      * @param args the command line arguments
      */
+    static ArrayList<ArrayList<Integer>> graph;
+    static ArrayList<Integer> path;
+    static ArrayList<Boolean> visited;
+    static int N;
 
-    static ArrayList<Integer> heights = new ArrayList<>();
-    static int N, M;
-
-    public static long check(long val) {
-        long sum = 0;
+    static void prepareData() {
+        graph = new ArrayList<>();
+        path = new ArrayList<>();
+        visited = new ArrayList<>();
         for (int i = 0; i < N; i++) {
-            if (heights.get(i) > val) {
-                sum += heights.get(i) - val;
-            }
+            graph.add(new ArrayList<>());
+            path.add(-1);
+            visited.add(false);
         }
-        return sum;
     }
 
-    public static long BinarySearch(long left, long right) {
-        long result = right;
-        while (left <= right)
-        {
-            long mid = left + (right - left) / 2;
-            if (check(mid) < M) {
-                right = mid - 1;
-            }
-            else {
-                result = mid;
-                left = mid + 1;
+    static void clearData() {
+        for (int i = 0; i < N; i++) {
+            graph.get(i).clear();
+        }
+        graph.clear();
+        visited.clear();
+        path.clear();
+    }
+    
+    static void DFS(int s) {
+        Stack<Integer> stack = new Stack<>();
+        visited.set(s, true);
+        stack.push(s);
+        while (!stack.isEmpty()) {
+            s = stack.pop();
+            for (int i = 0; i < graph.get(s).size(); i++) {
+                if (!visited.get(i)) {
+                    visited.set(i, true);
+                    stack.push(i);
+                    path.set(i, s);
+                }
             }
         }
-        return result;
     }
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         Reader r = new Reader();
-        long left = 0, right = 0;
-        int temp;
-
-        N = r.nextInt();
-        M = r.nextInt();
-        for (int i = 0; i < N; i++) {
-            temp = r.nextInt();
-            heights.add(temp);
-            if (temp > right) {
-                right = temp;
+        int T = r.nextInt();
+        int nE, u, v, count;
+        for (int i = 0; i < T; i++) {
+            N = r.nextInt();
+            prepareData();
+            nE = r.nextInt();
+            for (int j = 0; j < nE; j++) {
+                u = r.nextInt();
+                v = r.nextInt();
+                graph.get(v).add(u);
+                graph.get(u).add(v);
             }
+            count = 0;
+            for (int j = 0; j < N; j++) {
+                if (!visited.get(j)) {
+                    DFS(j);
+                    count++;
+                }
+            }
+            System.out.println(count);
+            clearData();
         }
-        System.out.println(BinarySearch(left, right));
+
     }
 
     static class Reader {
