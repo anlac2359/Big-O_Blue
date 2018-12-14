@@ -3,68 +3,37 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package SPOJ_EKO_Eko;
+package SPOJ_HACKRNDM_HackingTheRandomNumberGenerator;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
- * @author King
+ * @author Administrator
  */
 public class Main {
 
     /**
      * @param args the command line arguments
      */
-
-    static ArrayList<Integer> heights = new ArrayList<>();
-    static int N, M;
-
-    public static long check(long val) {
-        long sum = 0;
-        for (int i = 0; i < N; i++) {
-            if (heights.get(i) > val) {
-                sum += heights.get(i) - val;
-            }
-        }
-        return sum;
-    }
-
-    public static long BinarySearch(long left, long right) {
-        long result = right;
-        while (left <= right)
-        {
-            long mid = left + (right - left) / 2;
-            if (check(mid) < M) {
-                right = mid - 1;
-            }
-            else {
-                result = mid;
-                left = mid + 1;
-            }
-        }
-        return result;
-    }
-
+    
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
+        int N, K;
+        int[] a;
         Reader r = new Reader();
-        long left = 0, right = 0;
-        int temp;
-
+        
         N = r.nextInt();
-        M = r.nextInt();
+        K = r.nextInt();
+        a = new int[N];
         for (int i = 0; i < N; i++) {
-            temp = r.nextInt();
-            heights.add(temp);
-            if (temp > right) {
-                right = temp;
-            }
+            a[i] = r.nextInt();
         }
-        System.out.println(BinarySearch(left, right));
+        Arrays.sort(a);
+        
     }
-
+    
     static class Reader {
 
         final private int BUFFER_SIZE = 1 << 16;
@@ -176,5 +145,5 @@ public class Main {
             }
             din.close();
         }
-    }
+    }    
 }
