@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package SPOJ_EKO_Eko;
+package Hackerearth_DistinctCount;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 /**
  *
@@ -16,54 +17,35 @@ public class Main {
 
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
      */
-
-    static ArrayList<Integer> heights = new ArrayList<>();
-    static int N, M;
-
-    public static int check(int val) {
-        int sum = 0;
-        for (int i = 0; i < N; i++) {
-            if (heights.get(i) > val) {
-                sum += heights.get(i) - val;
-            }
-        }
-        return sum;
-    }
-
-    public static long BinarySearch(int left, int right) {
-        int result = right;
-        while (left <= right)
-        {
-            int mid = left + (right - left) / 2;
-            if (check(mid) < M) {
-                right = mid - 1;
-            }
-            else {
-                result = mid;
-                left = mid + 1;
-            }
-        }
-        return result;
-    }
-
+    
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         Reader r = new Reader();
-        int left = 0, right = 0, temp;
-
-        N = r.nextInt();
-        M = r.nextInt();
-        for (int i = 0; i < N; i++) {
-            temp = r.nextInt();
-            heights.add(temp);
-            if (temp > right) {
-                right = temp;
+        int T, N, X, num, distinctCount;
+        TreeSet ts;
+        ArrayList<Integer> al = new ArrayList<>();
+        
+        T = r.nextInt();
+        for (int i = 0; i < T; i++) {
+            N = r.nextInt();
+            X = r.nextInt();
+            for (int j = 0; j < N; j++) {
+                num = r.nextInt();
+                al.add(num);
+            }
+            ts = new TreeSet(al);
+            distinctCount = ts.size();
+            if (distinctCount == X) {
+                System.out.println("Good");
+            } else if (distinctCount < X) {
+                System.out.println("Bad");
+            } else {
+                System.out.println("Average");
             }
         }
-        System.out.println(BinarySearch(left, right));
     }
-
     static class Reader {
 
         final private int BUFFER_SIZE = 1 << 16;

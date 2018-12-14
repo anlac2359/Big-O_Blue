@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package SPOJ_EKO_Eko;
+package Hackerearth_SearchEngine;
 
-import java.io.*;
-import java.util.ArrayList;
+import com.sun.org.apache.xerces.internal.dom.ParentNode;
+import java.io.DataInputStream;
+import java.io.IOException;
 
 /**
  *
@@ -17,53 +18,94 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-
-    static ArrayList<Integer> heights = new ArrayList<>();
-    static int N, M;
-
-    public static int check(int val) {
-        int sum = 0;
-        for (int i = 0; i < N; i++) {
-            if (heights.get(i) > val) {
-                sum += heights.get(i) - val;
-            }
+    
+    class Node {
+        static final int MAX = 26;
+        public Node[] child;
+        public int countWord;
+        public Node() {
+            child = new Node[MAX];
+            countWord = 0;
         }
-        return sum;
     }
-
-    public static long BinarySearch(int left, int right) {
-        int result = right;
-        while (left <= right)
-        {
-            int mid = left + (right - left) / 2;
-            if (check(mid) < M) {
-                right = mid - 1;
-            }
-            else {
-                result = mid;
-                left = mid + 1;
-            }
+    
+    class Trie {
+        public static final int MAX = 26;
+        private Node root;
+        public Trie() {
+            root = new Node();
         }
-        return result;
+        public void addWord(String s) {
+            int ch;
+            Node temp = root;
+            for (int i = 0; i < s.length(); i++) {
+                ch = s.charAt(i) - 'a';
+                if (temp.child[ch] == null) {
+                    Node x =  new Node();
+                    temp.child[ch] = x;
+                }
+                temp = temp.child[ch];
+            }
+            temp.countWord++;
+        }
+        public boolean findWord(String s) {
+            int ch;
+            Node temp = root;
+            for (int i = 0; i < s.length(); i++) {
+                ch = s.charAt(i) - 'a';
+                if (temp.child[ch] == null) {
+                    return false;
+                }
+                temp = temp.child[ch];
+            }
+            return temp.countWord > 0;
+        }
+        private boolean isWord(Node pNode) {
+            return (pNode.countWord != 0);
+        }
+        private boolean isEmpty(Node pNode) {
+            for (int i = 0; i < MAX; i++) {
+                if (pNode.child[i] != null) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public boolean removeWord(String s) {
+            return removeWord(root, s, 0, s.length());
+        }
+        public boolean removeWord(Node root, String s, int level, int len) {
+            if (root == null) {
+                return false;
+            }
+            if (level == len) {
+                if (root.countWord > 0) {
+                    root.countWord--;
+                    return true;
+                }
+                return false;
+            }
+            int ch = s.charAt(level) - 'a';
+            boolean flag = removeWord(root.child[ch], s, level + 1, len);
+            if (flag && !isWord(root.child[ch]) && isEmpty(root.child[ch])) {
+                root.child[ch] = null;
+            }
+            return flag;
+        }
     }
-
+    
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         Reader r = new Reader();
-        int left = 0, right = 0, temp;
-
+        int N, Q;
+        Trie trie;
         N = r.nextInt();
-        M = r.nextInt();
+        Q = r.nextInt();
         for (int i = 0; i < N; i++) {
-            temp = r.nextInt();
-            heights.add(temp);
-            if (temp > right) {
-                right = temp;
-            }
+            
         }
-        System.out.println(BinarySearch(left, right));
     }
-
+    
     static class Reader {
 
         final private int BUFFER_SIZE = 1 << 16;

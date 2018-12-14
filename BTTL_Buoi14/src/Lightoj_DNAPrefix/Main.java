@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package SPOJ_EKO_Eko;
+package Lightoj_DNAPrefix;
 
 import java.io.*;
-import java.util.ArrayList;
 
 /**
  *
@@ -17,51 +16,60 @@ public class Main {
     /**
      * @param args the command line arguments
      */
+    static int ans = 0;
+    static int[] d = new int[26];
+    
+    static final int MAX = 4;
+    static class Node {
+        int value = 0;
+        Node[] child = new Node[MAX];
+    }
+    static void addNode(Node Root, String s) {
+        Node node = Root;
+        for (int i = 0; i < s.length(); i++) {
+            int next = d[s.charAt(i) - 'A'];
 
-    static ArrayList<Integer> heights = new ArrayList<>();
-    static int N, M;
-
-    public static int check(int val) {
-        int sum = 0;
-        for (int i = 0; i < N; i++) {
-            if (heights.get(i) > val) {
-                sum += heights.get(i) - val;
+            if (node.child[next] == null) {
+                node.child[next] = new Node();
             }
+            node = node.child[next];
+            node.value++;
+
+            ans = Math.max(node.value * (i + 1), ans);
         }
-        return sum;
     }
 
-    public static long BinarySearch(int left, int right) {
-        int result = right;
-        while (left <= right)
-        {
-            int mid = left + (right - left) / 2;
-            if (check(mid) < M) {
-                right = mid - 1;
-            }
-            else {
-                result = mid;
-                left = mid + 1;
+    static void Delete(Node u) {
+        for (int i = 0; i < 4; i++) {
+            if (u.child[i] != null) {
+                Delete(u.child[i]);
             }
         }
-        return result;
+        u = null;
     }
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         Reader r = new Reader();
-        int left = 0, right = 0, temp;
+        int T, N;
+        Node Root;
 
-        N = r.nextInt();
-        M = r.nextInt();
-        for (int i = 0; i < N; i++) {
-            temp = r.nextInt();
-            heights.add(temp);
-            if (temp > right) {
-                right = temp;
+        d['A' - 'A'] = 0;
+        d['C' - 'A'] = 1;
+        d['G' - 'A'] = 2;
+        d['T' - 'A'] = 3;
+        T = r.nextInt();
+        for (int i = 1; i <= T; i++) {
+            ans = 0;
+            Root = new Node();
+            N = r.nextInt();
+            for (int j = 0; j < N; j++) {
+                addNode(Root, r.readLine());
             }
+            System.out.println("Case " + i + ": " + ans);
+            Delete(Root);
+            Root = null;
         }
-        System.out.println(BinarySearch(left, right));
     }
 
     static class Reader {
