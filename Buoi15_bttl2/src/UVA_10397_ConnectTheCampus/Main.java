@@ -6,7 +6,6 @@
 //package UVA_10397_ConnectTheCampus;
 
 import java.awt.Point;
-import java.io.*;
 import java.util.*;
 
 /**
@@ -60,7 +59,7 @@ public class Main {
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.add(new Node(src, 0));
         dist[src] = 0;
-        
+
         while (!pq.isEmpty()) {
             int u = pq.peek().id;
             pq.poll();
@@ -81,7 +80,7 @@ public class Main {
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.add(new Node(src, 0));
         dist[src] = 0;
-        
+
         while (!pq.isEmpty()) {
             Node top = pq.poll();
             int u = top.id;
@@ -126,163 +125,47 @@ public class Main {
 
     public static void main(String[] args) {
         // TODO code application logic here
-        Reader r = new Reader();
+        Scanner sc = new Scanner(System.in);
         int x, y;
 
-        while (true) {
-            try {
-                N = r.nextInt();
-                prepareData();
-                for (int i = 0; i < N; i++) {
-                    x = r.nextInt();
-                    y = r.nextInt();
-                    pList.add(new Point(x, y));
+        while (sc.hasNext()) {
+            N = sc.nextInt();
+            prepareData();
+            for (int i = 0; i < N; i++) {
+                x = sc.nextInt();
+                y = sc.nextInt();
+                pList.add(new Point(x, y));
+            }
+            boolean isExistingCables[][] = new boolean[N][N];
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    isExistingCables[i][j] = false;
                 }
-                boolean isExistingCables[][] = new boolean[N][N];
-                for (int i = 0; i < N; i++) {
-                    for (int j = 0; j < N; j++) {
-                        isExistingCables[i][j] = false;
+            }
+            M = sc.nextInt();
+            for (int i = 0; i < M; i++) {
+                x = sc.nextInt() - 1;
+                y = sc.nextInt() - 1;
+                isExistingCables[x][y] = true;
+                isExistingCables[y][x] = true;
+            }
+            for (int i = 0; i < N - 1; i++) {
+                for (int j = i + 1; j < N; j++) {
+                    if (isExistingCables[i][j] == false) {
+                        int w = distance(pList.get(i), pList.get(j));
+                        graph.get(i).add(new Node(j, w));
+                        graph.get(j).add(new Node(i, w));
+                    } else {
+                        graph.get(i).add(new Node(j, 0));
+                        graph.get(j).add(new Node(i, 0));
                     }
                 }
-                M = r.nextInt();
-                for (int i = 0; i < M; i++) {
-                    x = r.nextInt();
-                    y = r.nextInt();
-                    isExistingCables[x - 1][y - 1] = true;
-                    isExistingCables[y - 1][x - 1] = true;
-                }
-                for (int i = 0; i < N - 1; i++) {
-                    for (int j = i + 1; j < N; j++) {
-                        if (isExistingCables[i][j] == false) {
-                            int w = distance(pList.get(i), pList.get(j));
-                            graph.get(i).add(new Node(j, w));
-                            graph.get(j).add(new Node(i, w));
-                        } else {
-                            graph.get(i).add(new Node(j, 0));
-                            graph.get(j).add(new Node(i, 0));
-                        }
-                    }
-                }
-                Prims(0);
-                double result = result();
-                System.out.printf("%.2f%n", result);
-                resetData();
-            } catch (IOException e) {
-                break;
             }
-        }
-    }
+            Prims(0);
+            double result = result();
+            System.out.printf("%.2f%n", result);
+            resetData();
 
-    static class Reader {
-
-        final private int BUFFER_SIZE = 1 << 16;
-        private DataInputStream din;
-        private byte[] buffer;
-        private int bufferPointer, bytesRead;
-
-        public Reader() {
-            din = new DataInputStream(System.in);
-            buffer = new byte[BUFFER_SIZE];
-            bufferPointer = bytesRead = 0;
-        }
-
-        public String readLine() throws IOException {
-            byte[] buf = new byte[64];
-            int cnt = 0, c;
-            while ((c = read()) != -1) {
-                if (c == '\n') {
-                    break;
-                }
-                buf[cnt++] = (byte) c;
-            }
-            return new String(buf, 0, cnt);
-        }
-
-        public int nextInt() throws IOException {
-            int ret = 0;
-            byte c = read();
-            while (c <= ' ') {
-                c = read();
-            }
-            boolean neg = (c == '-');
-            if (neg) {
-                c = read();
-            }
-            do {
-                ret = ret * 10 + c - '0';
-            } while ((c = read()) >= '0' && c <= '9');
-
-            if (neg) {
-                return -ret;
-            }
-            return ret;
-        }
-
-        public long nextLong() throws IOException {
-            long ret = 0;
-            byte c = read();
-            while (c <= ' ') {
-                c = read();
-            }
-            boolean neg = (c == '-');
-            if (neg) {
-                c = read();
-            }
-            do {
-                ret = ret * 10 + c - '0';
-            } while ((c = read()) >= '0' && c <= '9');
-            if (neg) {
-                return -ret;
-            }
-            return ret;
-        }
-
-        public double nextDouble() throws IOException {
-            double ret = 0, div = 1;
-            byte c = read();
-            while (c <= ' ') {
-                c = read();
-            }
-            boolean neg = (c == '-');
-            if (neg) {
-                c = read();
-            }
-
-            do {
-                ret = ret * 10 + c - '0';
-            } while ((c = read()) >= '0' && c <= '9');
-
-            if (c == '.') {
-                while ((c = read()) >= '0' && c <= '9') {
-                    ret += (c - '0') / (div *= 10);
-                }
-            }
-
-            if (neg) {
-                return -ret;
-            }
-            return ret;
-        }
-
-        private void fillBuffer() throws IOException {
-            bytesRead = din.read(buffer, bufferPointer = 0, BUFFER_SIZE);
-            if (bytesRead == -1) {
-                buffer[0] = -1;
-            }
-        }
-
-        private byte read() throws IOException {
-            if (bufferPointer == bytesRead) {
-                fillBuffer();
-            }
-            return buffer[bufferPointer++];
-        }
-
-        public void close() throws IOException {
-            if (din == null) {
-                return;
-            }
-            din.close();
         }
     }
 }

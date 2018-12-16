@@ -3,88 +3,95 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package SPOJ_CAM5_prayatna_PR;
+package UVA_10608_Friends;
 
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
 
 /**
  *
- * @author Administrator
+ * @author King
  */
 public class Main {
 
     /**
      * @param args the command line arguments
      */
-    static ArrayList<ArrayList<Integer>> graph;
-    static ArrayList<Integer> path;
-    static ArrayList<Boolean> visited;
-    static int N;
+    static int N, M;
+    static int[] parent;
+    static int[] rank;
+    static int[] count;
 
-    static void prepareData() {
-        graph = new ArrayList<>();
-        path = new ArrayList<>();
-        visited = new ArrayList<>();
+    static void makeSet() {
         for (int i = 0; i < N; i++) {
-            graph.add(new ArrayList<>());
-            path.add(-1);
-            visited.add(false);
+            parent[i] = i;
+            rank[i] = 0;
         }
     }
 
-    static void clearData() {
-        for (int i = 0; i < N; i++) {
-            graph.get(i).clear();
+    static int findSet(int u) {
+        if (parent[u] != u) {
+            parent[u] = findSet(parent[u]);
         }
-        graph.clear();
-        visited.clear();
-        path.clear();
+        return parent[u];
     }
-    
-    static void DFS(int s) {
-        Stack<Integer> stack = new Stack<>();
-        visited.set(s, true);
-        stack.push(s);
-        while (!stack.isEmpty()) {
-            s = stack.pop();
-            for (int i = 0; i < graph.get(s).size(); i++) {
-                int v = graph.get(s).get(i);
-                if (!visited.get(v)) {
-                    visited.set(v, true);
-                    stack.push(v);
-                    path.set(v, s);
-                }
-            }
+
+    static void unionSet(int u, int v) {
+        int up = findSet(u);
+        int vp = findSet(v);
+        if (up == vp) {
+            return;
         }
+        if (rank[up] > rank[vp]) {
+            parent[vp] = up;
+        } else if (rank[up] < rank[vp]) {
+            parent[up] = vp;
+        } else {
+            parent[up] = vp;
+            rank[vp]++;
+        }
+    }
+
+    static void prepareData() throws IOException {
+        Reader r = new Reader();
+        N = r.nextInt();
+        M = r.nextInt();
+        parent = new int[N];
+        rank = new int[N];
+        count = new int[N];
+        Arrays.fill(count, 0);
+        makeSet();
+        int u, v;
+        for (int i = 0; i < M; i++) {
+            u = r.nextInt() - 1;
+            v = r.nextInt() - 1;
+            unionSet(u, v);
+        }
+    }
+
+    static void resetData() {
+        parent = null;
+        rank = null;
+        count = null;
     }
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         Reader r = new Reader();
         int T = r.nextInt();
-        int nE, u, v, count;
+        int p, result = 0;
         for (int i = 0; i < T; i++) {
-            N = r.nextInt();
             prepareData();
-            nE = r.nextInt();
-            for (int j = 0; j < nE; j++) {
-                u = r.nextInt();
-                v = r.nextInt();
-                graph.get(v).add(u);
-                graph.get(u).add(v);
-            }
-            count = 0;
             for (int j = 0; j < N; j++) {
-                if (!visited.get(j)) {
-                    DFS(j);
-                    count++;
+                p = findSet(j);
+                count[p]++;
+                if (count[p] > result) {
+                    result = count[p];
                 }
             }
-            System.out.println(count);
-            clearData();
+            System.out.println(result);
+            resetData();
         }
-
     }
 
     static class Reader {

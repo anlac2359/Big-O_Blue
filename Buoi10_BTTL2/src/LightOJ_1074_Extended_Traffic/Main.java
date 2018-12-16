@@ -3,88 +3,113 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package SPOJ_CAM5_prayatna_PR;
+package LightOJ_1074_Extended_Traffic;
 
 import java.io.*;
 import java.util.*;
 
 /**
  *
- * @author Administrator
+ * @author King
  */
 public class Main {
 
     /**
      * @param args the command line arguments
      */
-    static ArrayList<ArrayList<Integer>> graph;
-    static ArrayList<Integer> path;
-    static ArrayList<Boolean> visited;
-    static int N;
+    static ArrayList<Edge> graph = new ArrayList<>();
+    static int[] dist;
+    static int[] weight;
+    static int n, m;
+    static final int INF = Integer.MAX_VALUE;
 
-    static void prepareData() {
-        graph = new ArrayList<>();
-        path = new ArrayList<>();
-        visited = new ArrayList<>();
-        for (int i = 0; i < N; i++) {
-            graph.add(new ArrayList<>());
-            path.add(-1);
-            visited.add(false);
+    static class Edge {
+
+        public int source;
+        public int target;
+        public int weight;
+
+        public Edge(int source, int target, int weight) {
+            this.source = source;
+            this.target = target;
+            this.weight = weight;
         }
     }
 
-    static void clearData() {
-        for (int i = 0; i < N; i++) {
-            graph.get(i).clear();
+    static void prepareData() throws IOException {
+        Reader r = new Reader();
+        n = r.nextInt();
+        dist = new int[n];
+        weight = new int[n + 1];
+        Arrays.fill(dist, INF);
+        int w, u, v;
+        for (int i = 1; i <= n; i++) {
+            w = r.nextInt();
+            weight[i] = w;
         }
+        m = r.nextInt();
+        for (int i = 0; i < m; i++) {
+            u = r.nextInt() - 1;
+            v = r.nextInt() - 1;
+            graph.add(new Edge(u, v, (int) Math.pow(weight[v] - weight[u], 3)));
+        }
+    }
+
+    static void resetData() {
         graph.clear();
-        visited.clear();
-        path.clear();
+        dist = null;
+        weight = null;
     }
-    
-    static void DFS(int s) {
-        Stack<Integer> stack = new Stack<>();
-        visited.set(s, true);
-        stack.push(s);
-        while (!stack.isEmpty()) {
-            s = stack.pop();
-            for (int i = 0; i < graph.get(s).size(); i++) {
-                int v = graph.get(s).get(i);
-                if (!visited.get(v)) {
-                    visited.set(v, true);
-                    stack.push(v);
-                    path.set(v, s);
+
+    static boolean BellmanFord(int source) {
+        int u, v, w;
+        dist[source] = 0;
+        for (int j = 0; j < dist.length; j++) {
+            for (int l = 0; l < graph.size(); l++) {
+                u = graph.get(l).source;
+                v = graph.get(l).target;
+                w = graph.get(l).weight;
+                if (dist[u] != INF) {
+                    if (dist[u] + w < dist[v]) {
+                        dist[v] = dist[u] + w;
+                    }
                 }
             }
         }
+        for (int i = 0; i < graph.size(); i++) {
+            u = graph.get(i).source;
+            v = graph.get(i).target;
+            w = graph.get(i).weight;
+            if (dist[u] != INF) {
+                if (dist[u] + w < dist[v])
+                return false;
+            }
+        }
+        return true;
     }
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         Reader r = new Reader();
-        int T = r.nextInt();
-        int nE, u, v, count;
-        for (int i = 0; i < T; i++) {
-            N = r.nextInt();
+        int T, q, t, result;
+
+        T = r.nextInt();
+        for (int i = 1; i <= T; i++) {
             prepareData();
-            nE = r.nextInt();
-            for (int j = 0; j < nE; j++) {
-                u = r.nextInt();
-                v = r.nextInt();
-                graph.get(v).add(u);
-                graph.get(u).add(v);
-            }
-            count = 0;
-            for (int j = 0; j < N; j++) {
-                if (!visited.get(j)) {
-                    DFS(j);
-                    count++;
+            BellmanFord(0);
+            q = r.nextInt();
+            System.out.println("Case " + i + ":");
+            for (int j = 0; j < q; j++) {
+                t = r.nextInt() - 1;
+                result = dist[t];
+                if (result != INF && result >= 3) {
+                    System.out.println(result);
+                } else {
+                    System.out.println("?");
                 }
             }
-            System.out.println(count);
-            clearData();
+            resetData();
         }
-
     }
 
     static class Reader {
